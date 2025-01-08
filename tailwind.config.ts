@@ -2,7 +2,6 @@ import type { Config } from "tailwindcss";
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
 import aspectRatio from '@tailwindcss/aspect-ratio';
-import lineClamp from '@tailwindcss/line-clamp';
 
 export default {
   darkMode: ['class', 'class'],
@@ -102,8 +101,7 @@ export default {
   	}
   },
   plugins: [
-
-	lineClamp,aspectRatio,typography,forms
+aspectRatio,typography,forms
   ],
 
 } satisfies Config;
