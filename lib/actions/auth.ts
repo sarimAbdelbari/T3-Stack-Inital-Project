@@ -1,6 +1,7 @@
-"use server";
+"use client";
 
-import {signIn , signOut} from "@/lib/auth";
+// import {signIn , signOut} from "@/lib/auth";
+import { signIn , signOut } from "next-auth/react"
 
 export async function loginGithub() {
   try {
@@ -18,7 +19,7 @@ export async function loginGithub() {
 export async function loginGoogle() {
   try {
 
-    await signIn("github");
+    await signIn("google");
 
     // successToast("Login successful");
 
@@ -31,9 +32,13 @@ export async function loginGoogle() {
 
 export async function logout() {
   try {
+
     await signOut({redirectTo: "/"});
+
     // successToast("Logout successful");
-  }catch(error){
+
+  } 
+  catch(error){
     console.error(error);
     // errorToast("Something went wrong");
   }

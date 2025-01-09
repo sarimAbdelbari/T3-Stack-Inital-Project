@@ -1,9 +1,10 @@
 import React from 'react'
 
-function Dashboard() {
+export default function page() {
+  
+
+
   return (
     <div>Hello World</div>
   )
 }
-
-export default Dashboard
