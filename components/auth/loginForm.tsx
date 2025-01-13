@@ -8,12 +8,19 @@ import Image from "next/image";
 import Link from "next/link";
 import Github from "@/components/providers/github";
 import Google from "@/components/providers/google";
+import { login } from "@/lib/actions/auth"
+import { useActionState } from 'react'
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function LoginForm({
   className,
 
   ...props
 }: React.ComponentProps<"div">) {
+
+
+    const [state, action, pending] = useActionState(login, undefined)
+  
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
@@ -26,12 +33,13 @@ export function LoginForm({
                   Login to your Acme Inc account
                 </p>
               </div>
-             <form className="flex flex-col gap-6">
+             <form action={action} className="flex flex-col gap-6">
              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
@@ -46,9 +54,37 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required />
+
+                
+
               </div>
-              <Button type="submit" className="w-full">
+              <div className="items-center flex gap-2">
+      <Checkbox id="RemamberMe"  />
+      <div className="grid gap-1.5 leading-none">
+        <label
+          htmlFor="terms1"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Remamber Me
+        </label>
+        
+      </div>
+                {/* <div className="items-top flex space-x-2">
+      <Checkbox id="RemamberMe"  />
+      <div className="grid gap-1.5 leading-none">
+        <label
+          htmlFor="terms1"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Accept terms and conditions
+        </label>
+        <p className="text-sm text-muted-foreground">
+          You agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div> */}
+    </div>
+              <Button type="submit" disabled={pending} className="w-full">
                 Login
               </Button>
              </form>

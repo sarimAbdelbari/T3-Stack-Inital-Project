@@ -4,8 +4,7 @@ import {
   Folder,
   MoreHorizontal,
   Share,
-  Trash2,
-  type LucideIcon,
+  Trash2
 } from "lucide-react"
 
 import {
@@ -24,23 +23,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
-export function NavProjects({
-  projects,
-}: {
-  projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[]
-}) {
+import { data } from "@/data"
+export function NavProjects() {
+  
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {data.projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
