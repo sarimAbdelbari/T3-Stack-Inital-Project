@@ -9,13 +9,30 @@ import Link from "next/link"
 import Github from "@/components/providers/github";
 import Google from "@/components/providers/google";
 import { register } from "@/lib/actions/auth"
-import { useActionState } from 'react'
+import { useActionState ,useEffect } from 'react'
+import { useRouter } from "next/navigation";
+import { errorToast, successToast, warnToast } from "@/components/utils/toastNotification";
+
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
 
+  const router = useRouter();
   const [state, action, pending] = useActionState(register, undefined)
+
+  // Handle side effects when `state` changes
+  useEffect(() => {
+    if (state?.success) {
+      successToast(state?.message ?? "Registration  successful");
+      router.push("/dashboard");
+    } else if (state?.error) {
+      errorToast(state?.error ?? "Something went wrong");
+    } else if (state?.warning) {
+      warnToast(state.warning ?? "Something went wrong");
+    }
+
+  }, [state, router]);
 
 
   return (

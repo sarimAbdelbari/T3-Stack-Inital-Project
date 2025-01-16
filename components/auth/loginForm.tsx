@@ -11,16 +11,35 @@ import Google from "@/components/providers/google";
 import { login } from "@/lib/actions/auth"
 import { useActionState } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
+import { errorToast, successToast, warnToast } from "@/components/utils/toastNotification";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function LoginForm({
   className,
 
   ...props
 }: React.ComponentProps<"div">) {
-
-
-    const [state, action, pending] = useActionState(login, undefined)
   
+  const router = useRouter();
+
+  const [state, action, pending] = useActionState(login, undefined)
+  
+  // Handle side effects when `state` changes
+  useEffect(() => {
+    if (state?.success) {
+      successToast(state?.message ?? "Registration  successful");
+      router.push("/dashboard");
+    } else if (state?.error) {
+      errorToast(state?.error ?? "Something went wrong");
+    } else if (state?.warning) {
+      warnToast(state.warning ?? "Something went wrong");
+    }
+
+  }, [state, router]);
+
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
@@ -60,10 +79,10 @@ export function LoginForm({
 
               </div>
               <div className="items-center flex gap-2">
-      <Checkbox id="RemamberMe"  />
+      <Checkbox id="rememberMe" name="rememberMe"  />
       <div className="grid gap-1.5 leading-none">
         <label
-          htmlFor="terms1"
+          htmlFor="rememberMe"
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           Remamber Me
@@ -112,7 +131,7 @@ export function LoginForm({
               width={450}
               height={450}
               alt="Image"
-              className="absolute inset-0 h-full w-full object-contain dark:brightness-[0.2] dark:grayscale"
+              className="absolute  inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>
         </CardContent>

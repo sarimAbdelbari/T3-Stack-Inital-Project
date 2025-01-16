@@ -27,7 +27,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {logoutProvider} from "@/lib/actions/auth";
+import { logoutProvider } from "@/lib/providers/auth";
+import { useRouter } from "next/navigation";
+import { useActionState , useEffect } from 'react'
+import { errorToast, successToast } from "@/components/utils/toastNotification";
+
 export function NavUser({
   user,
 }: {
@@ -38,6 +42,20 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const router = useRouter();
+  const [state, action, pending] = useActionState(logoutProvider, undefined)
+
+  // Handle side effects when `state` changes
+  useEffect(() => {
+    if (state?.success) {
+      successToast(state?.message ?? "Logout  successful");
+      router.push("/dashboard");
+    } else if (state?.error) {
+      errorToast(state?.error ?? "Something went wrong");
+    } 
+
+  }, [state, router]);
 
   return (
     <SidebarMenu>
@@ -88,7 +106,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={()=>logoutProvider()}>
+            <DropdownMenuItem disabled={pending} onClick={action}>
               <LogOut />
               Log out
             </DropdownMenuItem>

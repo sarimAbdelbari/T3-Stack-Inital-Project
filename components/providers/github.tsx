@@ -1,11 +1,35 @@
+
 import React from 'react'
-import { Button } from '../ui/button';
-import { loginGithub } from '@/lib/actions/auth';
+import { Button } from '@/components/ui/button';
+
+import { loginGithub } from '@/lib/providers/auth';
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { errorToast, successToast } from "@/components/utils/toastNotification";
+import { useActionState } from 'react'
+
 
 export default function Github() {
+
+const router = useRouter();
+  const [state, action, pending] = useActionState(loginGithub, undefined)
+
+  // Handle side effects when `state` changes
+  useEffect(() => {
+    
+    if (state?.success) {
+      successToast(state?.message ?? "Registration  successful");
+      router.push("/dashboard");
+    } else if (state?.error) {
+      errorToast(state?.error ?? "Something went wrong");
+    } 
+
+  }, [state, router]);
+
   return (
-    <form action={loginGithub}>
-      <Button type="submit" variant="outline" className="w-full">
+    <form action={action}>
+      <Button disabled={pending}  type="submit" variant="outline" className="w-full">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

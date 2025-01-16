@@ -27,6 +27,8 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
     image: session.user.image || "",
   } : null;
 
+ console.log("user" ,user);
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

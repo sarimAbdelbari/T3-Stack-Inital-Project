@@ -1,93 +1,86 @@
-"use client";
 
-import { signIn , signOut } from "next-auth/react"
+"use server";
+
 import { PrismaClient } from "@prisma/client";
 import { LoginSchema , RegistrationSchema ,FormState } from "@/lib/validations/auth";
-import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { errorToast, successToast, warnToast } from "@/components/utils/toastNotification";
 import { setCookie, deleteCookie } from 'cookies-next/client';
 
 
 
 const prisma = new PrismaClient();
 
-export async function loginGithub() {
+export async function login(state: FormState, formData: FormData) {
   try {
 
-    await signIn("github");
+    const validatedFields = LoginSchema.safeParse({
+      email: formData.get('email'),
+      password: formData.get('password'),
+      rememberMe: formData.get('rememberMe'),
+     })
 
-    successToast("Login successful");
-
-  } catch (error) {
-
-    console.error("Google login error:", error);
-    errorToast("Something went wrong");
-  }
-}
-export async function loginGoogle() {
-  try {
-
-    await signIn("google");
-
-    successToast("Login successful");
-
-  } catch (error) {
-
-    console.error("Google login error:", error);
-    errorToast("Something went wrong");
+ // If any form fields are invalid, return early
+ if (!validatedFields.success) {
+  return {
+    errors: validatedFields.error.flatten().fieldErrors,
   }
 }
 
 
+const { email, password ,rememberMe } = validatedFields.data;
 
-
-export async function login(data: z.infer<typeof LoginSchema>) {
-  try {
     const user = await prisma.user.findUnique({
       where: {
-        email: data.email,
+        email: email,
       },
     });
 
     if (!user) {
-      return { error: "Invalid Email" };
+      return { success: false, warning: "Invalid Email" };
     }
 
-    const passwordMatch = await bcrypt.compare(data.password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch){
-      return { error: "Invalid credentials" };
+      return { success: false, warning: "Invalid Password Match" };
     }
 
-    // Set session cookie
-    const sessionToken = crypto.randomUUID();
+    // Default session expiration to 1 day
+    let sessionExpiration = 1 * 24 * 60 * 60 * 1000; // 1 day
 
+    // If rememberMe is true, extend the session expiration to 30 days
+    if (rememberMe) {
+      sessionExpiration = 30 * 24 * 60 * 60 * 1000; // 30 days
+    }
+
+    // Generate a session token
+    const sessionToken = crypto.randomUUID();
 
     await prisma.session.create({
       data: {
         sessionToken,
         userId: user.id,
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+        expires: new Date(Date.now() + sessionExpiration),
       },
     });
-    
- 
+
+    // Set the session cookie with the appropriate expiration
     setCookie('session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-    })
+      maxAge: sessionExpiration / 1000, // Convert milliseconds to seconds
+    });
+
     
 
-    successToast("Login successful");
-    
-    return { success: true };
+     
+ 
+    return { success: true, message: "Login successful" };
   } catch (error) {
-    console.error("Login error:", error);
-    errorToast("Something went wrong");
-    return { error: "Something went wrong" };
+    
+    console.error("Login error:", error);  
+    return {success: false, error: "Something went wrong" };
   }
 }
 
@@ -115,17 +108,17 @@ export async function register(state: FormState, formData: FormData) {
 
 
     if (password !== confirmPassword) {
-      warnToast("Passwords do not match");
+      return { success: false, warning: "Invalid Password Match" };
     }
-
+    
     const existingUser = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-  
-  if (existingUser) {
-    warnToast("Email already exists");
+      where: {
+        email: email,
+      },
+    });
+    
+    if (existingUser) {
+    return {success: false, warning: "Email already exists" }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -158,15 +151,14 @@ export async function register(state: FormState, formData: FormData) {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   })
   
-
-
-  successToast("Registration successful");
   
-  return { success: true };
+ 
+   
+  
+  return { success: true , message: "Registration successful" };
 } catch (error) {
   console.error("Registration error:", error);
-  errorToast(`Registration error: ${error}`);
-  return { error: "Something went wrong" };
+  return {success: false , error: "Something went wrong" };
 }
 
 }
@@ -175,7 +167,6 @@ export async function register(state: FormState, formData: FormData) {
 export async function logoutProvider() {
   try {
 
-    await signOut({redirectTo: "/"});
 
 
     deleteCookie('session', {
@@ -184,14 +175,36 @@ export async function logoutProvider() {
       sameSite: "lax",
       maxAge: 0,
     })
+
     
-
-    successToast("Logout successful");
-
+    return { success: true , message: "Logout successful" };
+    
   } 
   catch(error){
     console.error(error);
-    errorToast("Something went wrong");
+    return { success : false , error: "Something went wrong" };
   }
 }
 
+// export async function logoutProvider() {
+//   try {
+
+//     await signOut({redirectTo: "/"});
+
+
+//     deleteCookie('session', {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       sameSite: "lax",
+//       maxAge: 0,
+//     })
+
+    
+//     return { success: true , message: "Logout successful" };
+    
+//   } 
+//   catch(error){
+//     console.error(error);
+//     return { success : false , error: "Something went wrong" };
+//   }
+// }
