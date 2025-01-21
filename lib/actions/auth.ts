@@ -16,6 +16,9 @@ export async function login(state: FormState, formData: FormData) {
 
     console.log("i am here");
     console.log("validatedFields", formData);
+    console.log("validatedFields", formData);
+    console.log("validatedFields", formData);
+    console.log("validatedFields", formData);
 
     // Transform `rememberMe` into a boolean
     const rememberMeB = formData.get('rememberMe') === 'on';
