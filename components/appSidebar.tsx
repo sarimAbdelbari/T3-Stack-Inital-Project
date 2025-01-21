@@ -1,7 +1,4 @@
-import {
-  Command,
-} from "lucide-react";
-
+import { Command } from "lucide-react";
 import { NavMain } from "@/components/navMain";
 import { NavProjects } from "@/components/navProjects";
 import { NavSecondary } from "@/components/navSecondary";
@@ -15,19 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { auth } from "@/lib/auth";
 
-export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const session = await auth();
-
+export async function AppSidebar({ session, ...props }) {
   // Extract only plain data
   const user = session?.user ? {
     name: session.user.name || "",
     email: session.user.email || "",
     image: session.user.image || "",
   } : null;
-
- console.log("user" ,user);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -49,9 +41,9 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain  />
-        <NavProjects  />
-        <NavSecondary  className="mt-auto" />
+        <NavMain />
+        <NavProjects />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         {/* Pass only plain data */}

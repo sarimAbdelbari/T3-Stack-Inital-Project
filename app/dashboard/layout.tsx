@@ -13,16 +13,23 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { getAuthenticatedUser } from "@/lib/actions/auth"
+import { cookies } from "next/headers";
 
 
-export default function Layout({
+
+
+export default async  function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  const session = await getAuthenticatedUser(await cookies());
+
   return  (
   <SidebarProvider>
-  <AppSidebar />
+  <AppSidebar session={session} />
   <SidebarInset>
     <header className="flex h-16 shrink-0 items-center gap-2">
       <div className="flex items-center gap-2 px-4">

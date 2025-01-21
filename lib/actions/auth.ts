@@ -4,8 +4,9 @@
 import { PrismaClient } from "@prisma/client";
 import { LoginSchema , RegistrationSchema ,FormState } from "@/lib/validations/auth";
 import bcrypt from "bcryptjs";
-import { setCookie, deleteCookie } from 'cookies-next/client';
+import { setCookie, deleteCookie ,getCookie } from 'cookies-next/client';
 
+import { GetServerSidePropsContext } from 'next';
 
 
 const prisma = new PrismaClient();
@@ -13,18 +14,26 @@ const prisma = new PrismaClient();
 export async function login(state: FormState, formData: FormData) {
   try {
 
+    console.log("i am here");
+    console.log("validatedFields", formData);
+
+    // Transform `rememberMe` into a boolean
+    const rememberMeB = formData.get('rememberMe') === 'on';
+
     const validatedFields = LoginSchema.safeParse({
       email: formData.get('email'),
       password: formData.get('password'),
-      rememberMe: formData.get('rememberMe'),
-     })
+      rememberMeB,
+    });
 
- // If any form fields are invalid, return early
- if (!validatedFields.success) {
-  return {
-    errors: validatedFields.error.flatten().fieldErrors,
+    
+  // If any form fields are invalid, return early
+  if (!validatedFields.success) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+      }
   }
-}
+
 
 
 const { email, password ,rememberMe } = validatedFields.data;
@@ -164,7 +173,7 @@ export async function register(state: FormState, formData: FormData) {
 }
 
 
-export async function logoutProvider() {
+export async function logout() {
   try {
 
 
@@ -185,6 +194,45 @@ export async function logoutProvider() {
     return { success : false , error: "Something went wrong" };
   }
 }
+
+
+
+
+export async function getAuthenticatedUser(context: GetServerSidePropsContext) {
+  const sessionToken =  getCookie('session', { req: context.req, res: context.res });
+  
+  if (!sessionToken) {
+    return null;
+  }
+
+  try {
+    const session = await prisma.session.findUnique({
+      where: { sessionToken: sessionToken as string },
+      include: { user: true },
+    });
+
+    if (!session || new Date(session.expires) < new Date()) {
+      return null;
+    }
+
+    return {
+      user: {
+        // id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        // image: session.user.image || "",
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+
+
 
 // export async function logoutProvider() {
 //   try {
