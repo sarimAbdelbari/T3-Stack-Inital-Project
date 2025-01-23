@@ -19,6 +19,29 @@ export async function loginGithub() {
     }
   }
 
+
+  export async function loginCredentials(formData: FormData) {
+    try {
+   
+   
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: formData.get("email"),
+        password: formData.get("password"),
+        rememberMe: formData.get("rememberMe") === "on",
+      });
+  
+
+      if (result?.error) {
+        return { success: false, error: result.error };
+      }
+  
+      return { success: true, message: "Login successful" };
+    } catch (error) {
+      console.error("login error:", error);
+      return { success: false, error: "Something went wrong" };
+    }
+  }
   export async function loginGoogle() {
     try {
   

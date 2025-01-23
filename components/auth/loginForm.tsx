@@ -8,35 +8,43 @@ import Image from "next/image";
 import Link from "next/link";
 import Github from "@/components/providers/github";
 import Google from "@/components/providers/google";
-import { login } from "@/lib/actions/auth"
+import { loginCredentials } from "@/lib/providers/auth"
 import { useActionState } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
-import { errorToast, successToast, warnToast } from "@/components/utils/toastNotification";
+import { errorToast, successToast } from "@/components/utils/toastNotification";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect  } from "react";
 
 export function LoginForm({
   className,
-
   ...props
 }: React.ComponentProps<"div">) {
-  
+  type State = {
+    success?: boolean;
+    error?: string;
+    message?: string;
+  };
+
+  const initialState: State = {};
+
+  const loginAction = async (
+    prevState: State,  1306157
+    payload: FormData
+  ): Promise<State> => {
+    return loginCredentials(payload);
+  };
+
+  const [state, formAction, isPending] = useActionState(loginAction, initialState);
   const router = useRouter();
 
-  const [state, action, pending] = useActionState(login, undefined)
-  
-  // Handle side effects when `state` changes
   useEffect(() => {
     if (state?.success) {
-      successToast(state?.message ?? "Registration  successful");
-      router.push("/dashboard");
+      successToast(state?.message ?? "Login successful");
+      router.push('/dashboard');
     } else if (state?.error) {
-      errorToast(state?.error ?? "Something went wrong");
-    } else if (state?.warning) {
-      warnToast(state.warning ?? "Something went wrong");
+      errorToast(state.error);
     }
-
   }, [state, router]);
 
 
@@ -52,7 +60,7 @@ export function LoginForm({
                   Login to your Acme Inc account
                 </p>
               </div>
-             <form action={action} className="flex flex-col gap-6">
+             <form action={formAction} className="flex flex-col gap-6">
              <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -103,7 +111,7 @@ export function LoginForm({
         </p>
       </div> */}
     </div>
-              <Button type="submit" disabled={pending} className="w-full">
+              <Button type="submit" disabled={isPending} className="w-full">
                 Login
               </Button>
              </form>

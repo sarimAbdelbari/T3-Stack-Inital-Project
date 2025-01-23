@@ -12,8 +12,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { auth } from "@/lib/auth";
 
-export async function AppSidebar({ session, ...props }) {
+export async function AppSidebar({...props }) {
+  
+  const session = await auth();
+  
+  
   // Extract only plain data
   const user = session?.user ? {
     name: session.user.name || "",
