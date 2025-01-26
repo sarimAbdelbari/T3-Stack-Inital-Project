@@ -29,7 +29,7 @@ export function LoginForm({
   const initialState: State = {};
 
   const loginAction = async (
-    prevState: State,  1306157
+    prevState: State, 
     payload: FormData
   ): Promise<State> => {
     return loginCredentials(payload);

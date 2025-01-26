@@ -23,6 +23,13 @@ model User {
 
 }
 
+model File {
+  id String @id @default(uuid())
+  name String
+  user User
+  uploadStatus 
+}
+
 
 // model Session {
   

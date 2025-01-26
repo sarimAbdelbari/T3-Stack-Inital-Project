@@ -1,14 +1,15 @@
 
-
-import React from 'react'
-
-export default  function Dashboard() {
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 
-  // const session = await auth();
+export default async function Dashboard() {
 
 
-  // if(!session) redirect("/login")
+  const session = await auth();
+
+
+  if(!session) redirect("/login")
 
   return (
     <div></div>

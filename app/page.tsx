@@ -1,4 +1,4 @@
-import Container from '@/components/container'
+import Container from '@/components/custom-Ui/container'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
@@ -68,7 +68,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
           <div
             aria-hidden='true'
             className='pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80'>
