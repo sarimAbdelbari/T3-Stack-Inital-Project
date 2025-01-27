@@ -25,7 +25,7 @@ export function RegisterForm({
   useEffect(() => {
     if (state?.success) {
       successToast(state?.message ?? "Registration  successful");
-      router.push("/dashboard");
+      router.push("/login");
     } else if (state?.error) {
       errorToast(state?.error ?? "Something went wrong");
     } else if (state?.warning) {

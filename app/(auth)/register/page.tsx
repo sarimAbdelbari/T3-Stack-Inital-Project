@@ -1,6 +1,6 @@
 import { RegisterForm } from "@/components/auth/registerForm"
 import { Suspense } from "react"
-import Loading from "../loading"
+import Loading from "@/app/(auth)/loading"
 
 export default function registerPage() {
   return (

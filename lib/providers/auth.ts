@@ -20,34 +20,11 @@ export async function loginGithub() {
   }
 
 
-  export async function loginCredentials(formData: FormData) {
-    try {
-   
-   
-      const result = await signIn("credentials", {
-        redirect: false,
-        email: formData.get("email"),
-        password: formData.get("password"),
-        rememberMe: formData.get("rememberMe") === "on",
-      });
-  
-
-      if (result?.error) {
-        return { success: false, error: result.error };
-      }
-  
-      return { success: true, message: "Login successful" };
-    } catch (error) {
-      console.error("login error:", error);
-      return { success: false, error: "Something went wrong" };
-    }
-  }
   export async function loginGoogle() {
     try {
   
-      await signIn("google");
+       await signIn("google");
   
-      
       return { success: true, message: "Login successful" };
        
   
@@ -64,8 +41,6 @@ export async function loginGithub() {
 
     await signOut({redirectTo: "/"});
 
-
-    
     return { success: true , message: "Logout successful" };
     
   } 
@@ -74,3 +49,22 @@ export async function loginGithub() {
     return { success : false , error: "Something went wrong" };
   }
 }
+export async function loginCredentials(formData: FormData) {
+try {
+  const result = await signIn("credentials", {
+    redirect: false,
+    email: formData.get("email"),
+    password: formData.get("password"),
+    rememberMe: formData.get("rememberMe") === "on",
+  });
+      
+    
+  if (result?.error) {
+    return { success: false, error: result.error };
+  }
+      
+  return { success: true, message: "Login successful" };
+} catch (error) {
+  console.error("login error:", error);
+  return { success: false, error: "Something went wrong" };
+}}
