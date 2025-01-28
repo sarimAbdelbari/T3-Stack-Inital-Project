@@ -1,29 +1,24 @@
 
 import React from 'react'
 import { loginGoogle } from "@/lib/providers/auth";
-
 import { Button } from "@/components/ui/button";
-
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { errorToast, successToast } from "@/components/utils/toastNotification";
 import { useActionState } from 'react'
 
 export default function Google() {
 
-  const router = useRouter();
   const [state, action, pending] = useActionState(loginGoogle, undefined)
 
   // Handle side effects when `state` changes
   useEffect(() => {
     if (state?.success) {
-      successToast(state?.message ?? "Registration  successful");
-      router.push("/dashboard");
+      successToast(state?.message ?? "Login successful");
     } else if (state?.error) {
       errorToast(state?.error ?? "Something went wrong");
     } 
 
-  }, [state, router]);
+  }, [state]);
 
   return (
     <form action={action}>

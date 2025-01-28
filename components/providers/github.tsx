@@ -1,10 +1,7 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button';
-
 import { loginGithub } from '@/lib/providers/auth';
-
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { errorToast, successToast } from "@/components/utils/toastNotification";
 import { useActionState } from 'react'
@@ -12,20 +9,16 @@ import { useActionState } from 'react'
 
 export default function Github() {
 
-const router = useRouter();
   const [state, action, pending] = useActionState(loginGithub, undefined)
 
   // Handle side effects when `state` changes
   useEffect(() => {
-    
     if (state?.success) {
-      successToast(state?.message ?? "Registration  successful");
-      router.push("/dashboard");
+      successToast(state?.message ?? "Login successful");
     } else if (state?.error) {
       errorToast(state?.error ?? "Something went wrong");
     } 
-
-  }, [state, router]);
+  }, [state]);
 
   return (
     <form action={action}>

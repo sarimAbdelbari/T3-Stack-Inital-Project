@@ -6,7 +6,7 @@ export async function loginGithub() {
     try {
    
   
-      await signIn("github");
+      await signIn("github",{redirectTo:"/main/user"});
   
       return { success: true, message: "Login successful" };
       
@@ -23,7 +23,7 @@ export async function loginGithub() {
   export async function loginGoogle() {
     try {
   
-       await signIn("google");
+       await signIn("google",{redirectTo:"/main/user"});
   
       return { success: true, message: "Login successful" };
        
@@ -36,6 +36,7 @@ export async function loginGithub() {
     }
   }
   
+
   export async function logoutProvider() {
   try {
 

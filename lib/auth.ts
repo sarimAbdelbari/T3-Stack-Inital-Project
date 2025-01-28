@@ -5,7 +5,6 @@ import NextAuth from "next-auth";
 import { LoginSchema } from "@/lib/validations/auth";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials) return null;
 
+
         const rememberB = credentials.rememberMe === "true";
 
         const validatedFields = LoginSchema.safeParse({
@@ -48,6 +48,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const { email, password, rememberMe } = validatedFields.data;
+
+        
+        if (!email || !password) {
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: {
@@ -79,22 +84,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (account?.provider) {
         const providerAccountId = account.providerAccountId;
 
-      // Find an existing user by email
-      let dbUser = await prisma.user.findUnique({
-        where: { email: profile?.email ?? undefined },
-        include: { accounts: true }, // Include linked provider accounts
-      });
-
-
+        // Find an existing user by email
+        let dbUser = await prisma.user.findUnique({
+          where: { email: user?.email ?? undefined },
+          include: { accounts: true }, // Include linked provider accounts
+        });
 
 
         if (!dbUser) {
           // Create a new user if it doesn't exist
+             const hashedPassword = await bcrypt.hash(providerAccountId, 10);
+          
           dbUser = await prisma.user.create({
             data: {
-              email: profile?.email ?? `${account.provider}_${providerAccountId}@AcmeInc.com`,
+              email:
+                profile?.email ??
+                `${account.provider}_${providerAccountId}@AcmeInc.com`,
               name: profile?.name,
-              password: randomUUID,
+              password: hashedPassword,
               accounts: {
                 create: {
                   provider: account.provider,
@@ -103,15 +110,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               },
               role: "USER", // Assign default role for new OAuth users
             },
+            include: {
+              accounts: true, // Ensure accounts are included in the created user
+            },
           });
-         } else {
+        } else {
           // Check if the provider account is already linked
           const existingAccount = dbUser.accounts.find(
             (acc) =>
               acc.provider === account.provider &&
               acc.providerAccountId === providerAccountId
           );
-  
+
           if (!existingAccount) {
             // Link the new provider account to the existing user
             await prisma.providerAccount.create({
@@ -123,9 +133,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
           }
         }
-  
+
         // Add role to the user object for token
-        user.role = dbUser.role;
+        user.role = dbUser?.role;
       }
       return true;
     },
@@ -138,7 +148,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       session.user.role = token.role as string; // Add role to session
-      session.user.rememberMe = token.rememberMe as boolean;// Ensure rememberMe is passed
+      session.user.rememberMe = token.rememberMe as boolean; // Ensure rememberMe is passed
 
       session.maxAge = token.rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60; // 7 days or 1 day
 
