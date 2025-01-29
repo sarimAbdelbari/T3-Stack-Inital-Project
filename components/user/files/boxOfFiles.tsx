@@ -1,44 +1,67 @@
 import { auth } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-import Image from "next/image";
+// import Image from "next/image";
+import { SkeletonCard } from "@/components/ui/skeletonCard";
+import { redirect } from "next/navigation";
+import { getFilesByUserId } from "@/lib/actions/fileActions";
+import ToastWrapper from "@/components/custom-Ui/toastWrapper";
+import { Ghost} from "lucide-react";
 
-const prisma = new PrismaClient()
+import FileBox from "@/components/custom-Ui/fileBox";
+
+
 const BoxFiles = async () => {
     
-    const session = await auth()
-
-    const files = await prisma.file.findMany({
-        where: {
-          userId: session?.user?.id,
-        },
-        select: {
-          name: true,
-          url: true,
-          uploadStatus: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 5,
-      },);
-
+  const session = await auth()
+   
+  if (!session?.user) {
+    redirect("/");
+  }
  
-    console.log("files" ,files)
+
+   let files ;
+   let errorMessage: string | undefined;
+   let loading = false;
+
+
+   try {
+    loading = true;
+
+    if (session.user.email) {
+      files = await getFilesByUserId(session.user.email);
+    } 
+
+    loading = false;
+   } catch (error) {
+    console.error(error);
+    errorMessage = "Failed to fetch files";
+    loading = false;
+   }
+ 
 
   return (
-    <>
-    {files && files.length > 0 && (
-      <div>
+    <div  > 
+      <ToastWrapper errorMessage={errorMessage} />
+      {loading ? (<div className="mt-16 flex flex-wrap items-center gap-7"><SkeletonCard  /> <SkeletonCard  /> <SkeletonCard  /> <SkeletonCard  /></div>) : (
+    
+        <div>
+        {files && files.length > 0 ? (
+          <ul className="mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3 ">
+
         {files.map((file) => (
-          <div key={file.name}>
-            <Image href={file.url} alt={file.name} />
-            <p>{file.name}</p>
-            <p>{file.uploadStatus}</p>
-          </div>
+          <FileBox file={file} key={file.id} />
         ))}
+          </ul>
+      ) : (
+        <div className="mt-16 flex flex-col items-center gap-2">
+          <Ghost className="text-muted-foreground h-8 w-8" />
+          <h3 className="font-semibold text-xl">Pretty empty around here</h3>
+          <p>Let&apos;s upload some Pdfs</p>
+        </div>
+      )}
       </div>
-    )}
-    </>
+      )}
+   
+    </div>
   )
 }
 

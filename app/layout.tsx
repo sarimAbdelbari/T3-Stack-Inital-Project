@@ -7,7 +7,6 @@ import { ThemeProvider } from "@/components/themeProvider"
 import { cn } from "@/lib/utils";
 // import Navbar from "@/components/navbar";
 
-
 const inter = Inter({ subsets : ['latin']})
 
 export const metadata: Metadata = {

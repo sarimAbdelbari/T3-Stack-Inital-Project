@@ -62,6 +62,8 @@ export async function register(state: FormState, formData: FormData) {
   }
 }
 
+
+
 // const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 // const JWT_EXPIRATION = "7d";
 

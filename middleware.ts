@@ -13,7 +13,7 @@ interface Token {
 // Define role-based access paths
 const rolePaths: Record<Role, RegExp> = {
   ADMIN: /^\/dashboard(\/.*)?$/,
-  USER: /^\/main\/user(\/.*)?$/,
+  USER: /^\/main\/user(\/.*)?$/,  
   PREMIUMUSER: /^\/main\/premium(\/.*)?$/,
 };
 
@@ -21,7 +21,7 @@ const rolePaths: Record<Role, RegExp> = {
 const redirectToRolePath = (role: Role, req: NextRequest) => {
   const roleRedirects: Record<Role, string> = {
     ADMIN: "/dashboard",
-    USER: "/main/user",
+    USER: "/main/user/files",
     PREMIUMUSER: "/main/premium",
   };
 

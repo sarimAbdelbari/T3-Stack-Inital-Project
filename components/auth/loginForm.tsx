@@ -41,7 +41,7 @@ export function LoginForm({
   useEffect(() => {
     if (state?.success) {
       successToast(state?.message ?? "Login successful");
-      router.push('/main/user');
+      router.push('/main/user/files');
     } else if (state?.error) {
       errorToast(state.error);
     }
