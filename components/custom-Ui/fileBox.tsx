@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import ToastWrapper from '@/components/custom-Ui/toastWrapper';
 import { deletefilebyId } from '@/lib/actions/fileActions';
+import { useState } from "react";
 
 interface File {
   id: string;
@@ -16,27 +17,29 @@ interface File {
 const FileBox = ({file}: {file: File}) => {
 
 
-  let successMessage : string | undefined;
-  let errorMessage :string | undefined;
-  let loading : boolean | undefined;
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
-  console.log("first")
-  const deletefile = async (id : string) =>{
-   try {
-    loading = true;
-    await deletefilebyId(id);
-    
-    successMessage = "File deleted successfully";
-  } catch (error) {
-    
-    console.error(error);
-    errorMessage = "Failed to delete file";
-    loading = false;
-   } finally {
-    loading = false;
-   }
+  const handleDelete = async (id: string) => {
+    try {
+      setLoading(true);
+      const result = await deletefilebyId(id);
 
-  }
+      if (result.success) {
+        setSuccessMessage(result.message);
+      } else {
+        setErrorMessage(result.error);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to delete file");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
 
 
   return (
@@ -71,7 +74,7 @@ const FileBox = ({file}: {file: File}) => {
 
           <Button
             onClick={() =>
-              deletefile(file.id)
+              handleDelete(file.id)
             }
             size='sm'
             className='w-full'

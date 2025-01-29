@@ -1,3 +1,5 @@
+"use server";
+
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -37,10 +39,10 @@ export const deletefilebyId = async (id: string) => {
         id: id,
       },
     });
-
+    return { success: true, message: "File deleted successfully" };
   } catch (error) {
     console.error("Error deleting file:", error);
     
-    return {errorMessage : "failed to delete file"};
+    return { success: false, error: "Failed to delete file" };
   }
 };
