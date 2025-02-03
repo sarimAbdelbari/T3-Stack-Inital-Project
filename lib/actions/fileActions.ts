@@ -1,14 +1,20 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
+import {  z } from "zod";
 
 const prisma = new PrismaClient();
 
 export const getFilesByUserId = async (email: string) => {
-  try {
+  try { 
+    
+    z.object({
+      email: z.string().email("Invalid email address"),
+    })
+
     const files = await prisma.file.findMany({
       where: {
-        User:{
+        user:{
           email:email,
         }
       },
@@ -23,6 +29,7 @@ export const getFilesByUserId = async (email: string) => {
         createdAt: "desc",
       },
       take: 5,
+      
     });
 
     return files;

@@ -1,5 +1,5 @@
-import Container from "@/components/custom-Ui/container";
-import NavBar from "@/components/custom-Ui/navbar";
+import Container from "@/components/customUi/container";
+import NavBar from "@/components/customUi/navbar";
 
 export default function Layout({
   children,

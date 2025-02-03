@@ -1,4 +1,4 @@
-import Container from '@/components/custom-Ui/container'
+import Container from '@/components/customUi/container'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'

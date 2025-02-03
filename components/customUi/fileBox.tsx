@@ -4,7 +4,7 @@ import { Loader2, MessageSquare, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import ToastWrapper from '@/components/custom-Ui/toastWrapper';
+import ToastWrapper from '@/components/customUi/toastWrapper';
 import { deletefilebyId } from '@/lib/actions/fileActions';
 import { useState } from "react";
 
@@ -41,12 +41,11 @@ const FileBox = ({file}: {file: File}) => {
 
   
 
-
   return (
     <>
     <ToastWrapper successMessage={successMessage} errorMessage={errorMessage}/>
-    <li key={file.id} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow transition hover:shadow-lg">
-    <Link href={`/main/user/files/${file.id}`} className='flex flex-col gap-2'>
+    <li key={file.id} className="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow-md transition hover:shadow-lg">
+    <Link href={`/main/user/files/${file.name}`} className='flex flex-col gap-2'>
     <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
             <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-primary to-secondary' />
             <div className='flex-1 truncate'>

@@ -1,12 +1,11 @@
 "use client"
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 
 const UploadFile = () => {
   
     const [isOpen , setIsOpen] = useState<boolean>(false);
-
 
   return (
     <Dialog open={isOpen} onOpenChange={(e)=>{
@@ -15,11 +14,12 @@ const UploadFile = () => {
         }
     }}>
         <DialogTrigger onClick={()=>setIsOpen(true)} asChild>
-        <Button >Upload File</Button>
+        <Button>Upload File</Button>
         </DialogTrigger>
 
         <DialogContent>
-            Drag you file in this box
+            <DialogTitle>Upload Your File</DialogTitle>
+            Drag your file in this box
         </DialogContent>
     </Dialog>
   )

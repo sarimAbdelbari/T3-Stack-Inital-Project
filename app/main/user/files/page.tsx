@@ -1,5 +1,5 @@
-import UploadFile from '@/components/custom-Ui/uploadFile'
-import BoxFiles from '@/components/user/files/boxOfFiles'
+import UploadFile from '@/components/customUi/uploadFile'
+import BoxFiles from '@/components/customUi/user/files/boxOfFiles'
 import React from 'react'
 
 export default function User() {

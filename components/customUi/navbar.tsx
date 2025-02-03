@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 export default function NavBar() {
   return (
-    <nav className='flex justify-between items-center py-4'>
+    <nav className='flex justify-between items-center py-3'>
       
       <div className='flex-1'>
         <Image width={60} height={60} src="/logo.png" alt="Logo"/>
