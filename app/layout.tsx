@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "@/components/themeProvider"
 import { cn } from "@/lib/utils";
 // import Navbar from "@/components/navbar";
-
+import { UserProvider } from "@/context/UserProvider";
 const inter = Inter({ subsets : ['latin']})
 
 export const metadata: Metadata = {
@@ -32,7 +32,9 @@ export default function RootLayout({
           >
 
          {/* <Navbar/> */}
+         <UserProvider>
         {children}
+         </UserProvider>
         <ToastContainer />
           </ThemeProvider>
       </body>

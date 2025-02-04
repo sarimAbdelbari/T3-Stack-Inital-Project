@@ -18,7 +18,7 @@ const BoxFiles = async () => {
   }
  
 
-   let files ;
+   let files;
    let errorMessage: string | undefined;
    let loading = false;
 
