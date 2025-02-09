@@ -39,6 +39,15 @@ export const getFilesByUserId = async (email: string) => {
   }
 };
 
+export const postFile = async (data: FormData) => {
+  try {
+    
+    
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 export const deletefilebyId = async (id: string) => {
   try {
     await prisma.file.delete({

@@ -7,12 +7,18 @@ import {
   DialogTrigger,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { UploadDropzone, UploadButton } from "@/components/utils/uploadthing";
+import { UploadDropzone } from "@/components/utils/uploadthing";
 import { successToast, errorToast, infoToast } from "@/components/utils/toastNotification";
 import { Progress } from "@/components/ui/progress";
+import { postFile } from "@/lib/actions/fileActions";
 
 const UploadDropMe = () => {
   const [isUploading, setIsUploading] = useState<number | null>(null);
+  const [file , setFile] = useState(null);
+
+
+  
+ 
 
   return (
     <div className="border h-72 m-4 border-dashed border-gray-300 rounded-lg p-4 bg-muted flex flex-col items-center justify-center gap-4">
@@ -30,17 +36,26 @@ const UploadDropMe = () => {
                 setIsUploading(progress - 10);
                 console.log(`Upload Progress: ${progress}%`);
               }}
-              onClientUploadComplete={(res) => {
+              onClientUploadComplete={async (res) => {
                 console.log("Files: ", res);
+                if (res && res.length > 0){
+                  await postFile(res)
+
+                }
+                
                 setIsUploading(100);
                 successToast("Upload Completed");
+                setIsUploading(0);
               }}
               onUploadError={(error: Error) => {
                 errorToast(`Error! ${error.message}`);
+                setIsUploading(0);
               }}
-            onUploadAborted={() => {
+              onUploadAborted={() => {
                 infoToast("Upload Aborted");
+                setIsUploading(0);
               }}
+              
             />
 
             <Progress className="w-full" value={isUploading} />
