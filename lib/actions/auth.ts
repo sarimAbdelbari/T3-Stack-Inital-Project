@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   // LoginSchema,
   RegistrationSchema,
-  FormState,
+  FormState
 } from "@/lib/validations/auth";
 import bcrypt from "bcryptjs";
 // import { setCookie, getCookie, deleteCookie } from "cookies-next/server";

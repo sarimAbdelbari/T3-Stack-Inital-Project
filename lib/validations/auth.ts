@@ -39,6 +39,10 @@ export const RegistrationSchema = z.object({
 });
 
 
+// export const fileSchema = z.object({
+
+// })
+
 export type FormState = | {
       errors?: {
         name?: string[]

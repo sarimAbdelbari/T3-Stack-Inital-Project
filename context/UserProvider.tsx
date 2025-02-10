@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 
 interface User {
-  email?: string;
+  id: string | undefined;
+  email: string | undefined;
   role?: "ADMIN" | "USER" | "PREMIUMUSER";
 }
 
@@ -16,8 +17,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchSession = async () => {
       const session = await getSession();
+
       if (session?.user) {
         setUser({
+          id: session.user.id,
           email: session.user.email ?? undefined,
           role: session.user.role as "ADMIN" | "USER" | "PREMIUMUSER", // Middleware extracts role
         });

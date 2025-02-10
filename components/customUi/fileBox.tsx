@@ -10,6 +10,7 @@ import { useState } from "react";
 interface File {
   id: string;
   name: string;
+  key:string;
   createdAt: Date;
 }
 
@@ -18,10 +19,10 @@ const FileBox = ({ file }: { file: File }) => {
   const [successMessage, setSuccessMessage] = useState<string | undefined>();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string , key: string) => {
     try {
       setLoading(true);
-      const result = await deletefilebyId(id);
+      const result = await deletefilebyId({id,key});
 
       if (result.success) {
         setSuccessMessage(result.message);
@@ -73,7 +74,7 @@ const FileBox = ({ file }: { file: File }) => {
           </div>
 
           <Button
-            onClick={() => handleDelete(file.id)}
+            onClick={() => handleDelete(file.id,file.key)}
             size="sm"
             className="w-full"
             variant="destructive"

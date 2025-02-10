@@ -10,16 +10,29 @@ import {
 import { UploadDropzone } from "@/components/utils/uploadthing";
 import { successToast, errorToast, infoToast } from "@/components/utils/toastNotification";
 import { Progress } from "@/components/ui/progress";
-import { postFile } from "@/lib/actions/fileActions";
+import { postFile ,findFileById } from "@/lib/actions/fileActions";
+import { useUser } from "@/context/UserProvider";
 
 const UploadDropMe = () => {
   const [isUploading, setIsUploading] = useState<number | null>(null);
-  const [file , setFile] = useState(null);
-
-
+  const [startUpload , setStartUpload] = useState(false);
   
+  const user = useUser();
  
 
+  // onBeforeUploadBegin={async (files) => {
+  //   if (files && files.length > 0 && user?.id) {
+  //     const result = await findFileById({ fileName: files[0]?.name, userId: user?.id });
+  //     if (result) {
+  //       infoToast("file Already Exists");
+  //       return [];
+  //     } else {
+  //       return files;
+  //     }
+  //   }
+  //   return files;
+  // }}
+  
   return (
     <div className="border h-72 m-4 border-dashed border-gray-300 rounded-lg p-4 bg-muted flex flex-col items-center justify-center gap-4">
       <div className="flex items-center justify-center  w-full">
@@ -32,30 +45,62 @@ const UploadDropMe = () => {
             <UploadDropzone
               endpoint="fileUploader"
               config={{ mode: "auto" }}
+              disabled={startUpload}
+              onBeforeUploadBegin={async (files) => {
+                setStartUpload(true);
+    if (files && files.length > 0 && user?.id) {
+      const result = await findFileById({ fileName: files[0]?.name, userId: user?.id });
+      if (result) {
+        infoToast("file Already Exists");
+        return [];
+      } else {
+        return files;
+      }
+    }
+    setStartUpload(false);
+    return files;
+  }}
               onUploadProgress={(progress) => {
                 setIsUploading(progress - 10);
+                setStartUpload(false);
                 console.log(`Upload Progress: ${progress}%`);
               }}
               onClientUploadComplete={async (res) => {
-                console.log("Files: ", res);
-                if (res && res.length > 0){
-                  await postFile(res)
-
-                }
                 
-                setIsUploading(100);
-                successToast("Upload Completed");
+                if (res && res.length > 0 && user?.id){
+                 const result = await postFile({
+                    name: res[0].name,
+                    url: res[0].url,
+                    key: res[0].key,
+                    hash: res[0].fileHash,
+                    userId: user.id,
+                    uploadStatus:"SUCCESS",
+                  });
+   
+                  console.log("res", res);
+
+                  if (result.success) {
+                    setIsUploading(100);
+                    successToast("Upload Completed");
+                  } else {
+                    errorToast(`Error! ${result.error}`);
+                    setIsUploading(0);
+                  }
+                }
+
+                setStartUpload(false);
                 setIsUploading(0);
               }}
               onUploadError={(error: Error) => {
                 errorToast(`Error! ${error.message}`);
+                setStartUpload(false);
                 setIsUploading(0);
               }}
               onUploadAborted={() => {
                 infoToast("Upload Aborted");
+                setStartUpload(false);
                 setIsUploading(0);
               }}
-              
             />
 
             <Progress className="w-full" value={isUploading} />

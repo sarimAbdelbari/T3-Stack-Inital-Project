@@ -136,6 +136,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Add role to the user object for token
         user.role = dbUser?.role;
+        user.id = dbUser?.id;
       }
       return true;
     },
@@ -143,13 +144,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.role = user.role; // Add role from user object
         token.rememberMe = user.rememberMe;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.role = token.role as string; // Add role to session
       session.user.rememberMe = token.rememberMe as boolean; // Ensure rememberMe is passed
-
+      session.user.id = token.id as string;
       session.maxAge = token.rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60; // 7 days or 1 day
 
       return session;

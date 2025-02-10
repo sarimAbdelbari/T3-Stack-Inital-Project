@@ -27,7 +27,6 @@ model ProviderAccount {
   user              User     @relation(fields: [userId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
   @@unique([provider, providerAccountId]) // Ensure no duplicate accounts for the same provider
 }
 
@@ -44,6 +43,7 @@ model File {
   uploadStatus UploadStatus @default(PENDING)
   url          String
   key          String
+  hash         String      
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   user         User?        @relation("UserFiles", fields: [userId], references: [id])
